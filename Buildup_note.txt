@@ -1,0 +1,88 @@
+1. Django만들기
+1) Make Project
+cmd 창에서 django-admin startproject test # 프로젝트 생성, 이름은 test말고 아무거나 가능
+
+생성된 project폴더 내에 settings.py에 ALLOWED_HOSTS = []를 ALLOWED_HOSTS = ['*']로 변경
+
+python manage.py runserver # 서버 구동 후 브라우저 http://127.0.0.1:8000/ 들어가서 django 구동 환경 확인
+
+2) Make APP
+django-admin startapp django # 앱 생성, 이름은 django말고 아무거나 가능
+
+settings.py파일 내 INSTALLED_APPS = 에 생성한 앱을 등록하기
+ex)'board.apps.BoardConfig', # 생성한 app 폴더 내에 apps.py에서 board, BoardConfig 확인 가능
+
+App폴더 내 views.py에서 간단한 함수 등록 후 main폴더 내 urls.py에 url 연결
+ex) views.py
+from django.http import HttpResponse
+def test(request):
+    return HttpResponse("Connection Success")
+
+ex) urls.py
+from board import views as bv
+urlpatterns = [path('board/', bv.test),]
+
+python manage.py runserver # 서버 구동 후 브라우저 http://127.0.0.1:8000/board/ 들어가서 등록한 함수가 보여지는지 확인
+
+-------------------------------------------------------------------------------------------------------------------
+2. Git 등록
+Vscode에서 ctrl+shift+p(Command Palete)실행하여 >Git:Initialize Repository # 레파지토리(폴더) 초기설정(등록)/ .git파일 생성
+
+Message를 입력하고 Commit
+
+ctrl+shift+p(Command Palete)실행하여 >Git:Publish Branch # github에 연동
+
+연동 완료 되면 Push하고 github에 들어가서 연동되었는지 확인하기
+-------------------------------------------------------------------------------------------------------------------
+3. main homepage 설정(CSS 활용)
+mkdir templates로 templates 폴더 만들기 !!경로 주의!! 생성한 앱과 동일선상에 위치
+
+templates 폴더 내에 html파일 생성
+ex) via main.html
+
+이후 w3schools.com에서 원하는 CSS template 선택 후 html 소스코드 복사 및 main.html에 붙여넣기
+
+setting.py파일에서 templates 경로 설정
+ex) TEMPLATES = ['DIRS': [BASE_DIR/ 'templates',], # root로 경로 설정한 것임
+
+생성한 app 폴더 내에 views.py에서 함수 생성하고 html 연결하기
+ex)def main(request):
+    return render(request, 'main.html')
+
+main폴더 내의 urls.py에 url 추가
+ex)path('', bv.main, name='main'),
+
+python manage.py runserver # 서버 구동 후 브라우저 http://127.0.0.1:8000/로 들어가서 가져온 CSS가 잘 작동되는지 확인
+
+4. CSS static 적용
+cmd창에 mkdir static&&css로 static폴더와 static안에 css폴더 생성
+
+templates를 적용한 html을 열고 css와 연결된 부분 찾기
+ex) main.html파일 안에 6번라인
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="/static/css/style.css"> # 위와 같이 되어 있던 것을 이 구문으로 변경
+
+생성한 static/css폴더 안에 vi style.css파일 생성
+
+style.css파일안에 https://www.w3schools.com/w3css/4/w3.css 소스코드 복사 붙여넣기
+
+main폴더의 settings.py파일에 STATICFILES_DIRS=[BASE_DIR/'static', ] 구문 추가하여 static폴더와 연결
+
+main.html에서 원하는 대로 text, image등을 수정하기
+
+5. selenium python파일 생성
+ex) worknet.py
+
+6. DB와 Django 연결
+Django에서 연결하고자 하는 App폴더의 view.py파일에 mongodb와 연결하는 함수 만들기
+ex) def listwithmongo(request):
+        data = request.GET.copy()
+        with MongoClient('mongodb://127.0.0.1:27017/') as client: # use my ip and sync with datas/worknet.py
+            jobdb = client.jobdb
+            result = list(jobdb.datalist.find({}))
+            data['page_obj'] = result
+        return render(request, 'listwithmongo.html', context=data)
+
+7. views.py와 urls.py, 생성한 html파일 연동하기
+
+
